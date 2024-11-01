@@ -10,6 +10,8 @@ import javafx.stage.Stage;
 
 public class Main extends javafx.application.Application{
 
+    public static DatabaseManage dbManager;
+    
     @Override
     public void start(Stage primaryStage){
         try{
@@ -22,10 +24,14 @@ public class Main extends javafx.application.Application{
         }
     }
     public static void main(String[] args) {
+        createDatabase();
         launch(args);
     }
 
-
+    public static void createDatabase(){
+        dbManager = new DatabaseManage();
+        dbManager.initDatabase();
+    }
     public static double getScreenWidth(){
         Rectangle2D screen =  Screen.getPrimary().getVisualBounds();
         return screen.getWidth();

@@ -7,9 +7,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javafx.scene.chart.PieChart.Data;
+
 public class DatabaseManage {
-    public static final String DB_URL = "hdbc:sqlite:debrief.db";
+    public static final String DB_URL = "jdbc:sqlite:debrief.db";
+    public DatabaseManage(){
+
+    }
     public void initDatabase(){
+        System.out.println("========Database Init=============");
         String createTagTable = """
                 CREATE TABLE IF NOT EXISTS tags(
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,7 +26,7 @@ public class DatabaseManage {
         String createURLTable ="""
                 CREATE TABLE IF NOT EXISTS urls(
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    index_number INTEGER UNIQUE NOT NULL
+                    index_number INTEGER UNIQUE NOT NULL,
                     url TEXT NOT NULL
                 )
                 """;
@@ -53,6 +59,7 @@ public class DatabaseManage {
                 statement.setInt(1, nextIndex);
                 statement.setString(2, questionText);
                 statement.executeUpdate();
+                System.out.println("========Insert=========");
                 return nextIndex;
             }
         }catch(SQLException e){
@@ -68,6 +75,7 @@ public class DatabaseManage {
                 statement.setInt(1, nextIndex);
                 statement.setString(2, urlText);
                 statement.executeUpdate();
+                System.out.println("========Insert=========");
                 return nextIndex;
             }
         }catch(SQLException e){
@@ -81,7 +89,7 @@ public class DatabaseManage {
             PreparedStatement statement = conn.prepareStatement(sql)){
                 statement.setInt(1, indexNum);
                 var rs = statement.executeQuery();
-                if(rs.next()) return rs.getString("tags");    
+                if(rs.next()) return rs.getString("question");    
         }catch(SQLException e){
             e.printStackTrace();;
 
@@ -102,4 +110,95 @@ public class DatabaseManage {
         }
         return null;
     }
+    public void verifyTable(){
+        String sql = """
+                SELECT name FROM sqlite_master
+                WHERE type='table' AND (name='tags' OR name='urls')
+                """;
+        try(Connection conn = DriverManager.getConnection(DB_URL);
+            Statement statement = conn.createStatement()){
+                try(ResultSet rs = statement.executeQuery(sql)){
+                    while(rs.next()){
+                        System.out.println("table: " + rs.getString("name"));
+                    }
+                }
+            }catch(SQLException e){
+                e.printStackTrace();
+            }
+    }
+    
+    public void printTagTable(){
+        String sql = "SELECT * FROM tags";
+        System.out.println("printTagTable() called");
+        try(Connection conn = DriverManager.getConnection(DB_URL);
+            Statement statement = conn.createStatement();){
+            System.out.println("\n=== Tags Table ===");
+                try(ResultSet rs = statement.executeQuery(sql)){
+                    while(rs.next()){
+                        int num = rs.getInt("index_number");
+                        String temp = rs.getString("question");
+                        System.out.printf("Index: %d, Question: %s%n", num, temp);
+
+                    }
+                }
+            }catch(SQLException e){
+                e.printStackTrace();
+            }
+    }
+    public void printUrlTable(){
+        String sql = "SELECT * FROM urls";
+        try(Connection conn = DriverManager.getConnection(DB_URL);
+            Statement statement = conn.createStatement()){
+                try(ResultSet rs = statement.executeQuery(sql)){
+                    while(rs.next()){
+                        int num = rs.getInt("index_number");
+                        String temp = rs.getString("url");
+                        System.out.printf("Index: %i, Url: %s%n",num, temp );
+                        
+                        
+                    }
+                }
+            }catch(SQLException e){
+                e.printStackTrace();
+            }
+    }
+    public void clearTagsTable(){
+        String sql = "DELETE FROM tags";
+        try(Connection conn = DriverManager.getConnection(DB_URL);
+            Statement statement=conn.createStatement()){
+                statement.executeUpdate(sql);
+            }catch(SQLException e){
+                e.printStackTrace();
+            }
+    }
+    public void clearUrlsTable(){
+        String sql = "DELETE FROM urls";
+        try(Connection conn = DriverManager.getConnection(DB_URL);
+            Statement statement=conn.createStatement()){
+                statement.executeUpdate(sql);
+            }catch(SQLException e){
+                e.printStackTrace();
+            }
+    }
+    public void deleteTagsColumn(int column){
+        String sql = "DELETE FROM tags WHERE index_number=?";
+        try(Connection conn = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = conn.prepareStatement(sql)){
+                statement.setInt(1, column);
+                statement.executeUpdate(sql);
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
+    public void deleteUrlsColumn(int column){
+        String sql="DELETE FROM urls WHERE index_number=?";
+        try(Connection conn = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = conn.prepareStatement(sql)){
+                statement.setInt(1, column);
+                statement.executeUpdate();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
+
 }

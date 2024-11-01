@@ -52,8 +52,11 @@ public class Controller {
     private void createTag(KeyEvent event){
         if(event.getCode()==KeyCode.ENTER){
             String tag = tagTextField.getText();
+            DatabaseManage dbManage = Main.dbManager;
+            dbManage.insertTag(tag);
+            dbManage.printTagTable();
             tagTextField.clear();
-            Text tagContent = new Text("\n  #: "+ tag + "\n");
+            Text tagContent = new Text("\n  #:  "+ tag + "\n");
             tagTextDisplay.getChildren().add(tagContent);
 
             ProgressIndicator indicator = new ProgressIndicator();
