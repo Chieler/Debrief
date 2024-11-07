@@ -32,11 +32,12 @@ public class Controller {
     private WebEngine engine;
     @FXML
     public void initialize(){   
+        populateTagsTable();
         tagTextFieldFunc();
-        displauWebView();
+        displayWebView();
 
     }
-    public void displauWebView(){
+    public void displayWebView(){
         engine = webView.getEngine();
         engine.load("https://www.google.com/");
     }
@@ -96,4 +97,49 @@ public class Controller {
             };
             
         }
+    public void populateTagsTable(){
+        DatabaseManage dbManage = Main.dbManager;
+        if(dbManage.getTagsTableSize()==0){
+            return;
+        }
+        int tableSize = dbManage.getTagsTableSize();
+
+        for(int i =0; i<tableSize; i++){
+            String tag=dbManage.getTagsByIndex(i+1);
+            System.out.println("++++++++++++++");
+            System.out.println(tag);
+            Text tagContent = new Text("\n  #:  "+ tag + "\n");
+            tagTextDisplay.getChildren().add(tagContent);
+            Task<String> task = new Task<String>() {
+                @Override
+                protected String call() throws Exception{
+                    Runner runner = new Runner(tag);
+                    return runner.run();
+                }
+            };
+
+            task.setOnSucceeded(e->{
+                Platform.runLater(() ->{
+                    String result = task.getValue();
+                    // Remove loading indicator
+                    // Add result text
+                    Text resultText = new Text(result + "\n");
+                    tagTextDisplay.getChildren().add(resultText);
+                });
+            });
+            
+            task.setOnFailed(e ->{
+                Platform.runLater(() -> {
+                    // Remove loading indicator
+                    // Show error message
+                    Text errorText = new Text("Error processing tag");
+                    errorText.setFill(Color.RED);
+                    tagTextDisplay.getChildren().add(errorText);
+                });
+            });
+
+            new Thread(task).start();
+        }
+    }
+
 }

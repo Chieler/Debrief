@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javafx.scene.chart.PieChart.Data;
 
 public class DatabaseManage {
     public static final String DB_URL = "jdbc:sqlite:debrief.db";
@@ -126,7 +125,10 @@ public class DatabaseManage {
                 e.printStackTrace();
             }
     }
-    
+    public void clearDatabase(){
+        clearTagsTable();
+        clearUrlsTable();
+    }
     public void printTagTable(){
         String sql = "SELECT * FROM tags";
         System.out.println("printTagTable() called");
@@ -200,5 +202,27 @@ public class DatabaseManage {
             e.printStackTrace();
         }
     }
-
+    public int getTagsTableSize(){
+        String sql = "SELECT COUNT(*) AS count FROM tags";
+        try(Connection conn = DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = conn.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery();){
+                if(rs.next()) return rs.getInt("count");
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return -1;
+    }
+    public int getUrlsTableSize(){
+        String sql = "SELECT COUNT(*) as count FROM urls";
+        try(Connection conn=DriverManager.getConnection(DB_URL);
+            PreparedStatement statement = conn.prepareStatement(sql);
+            ResultSet rs = statement.executeQuery()){
+                if(rs.next()) return rs.getInt("count");
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        
+        return -1;
+    }
 }
