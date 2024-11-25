@@ -1,15 +1,25 @@
 package com.debrief;
 
 
+import java.util.Optional;
+
 import com.debrief.Tags.Runner;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
+import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -28,15 +38,35 @@ public class Controller {
     private TextFlow tagTextDisplay;
     @FXML
     private WebView webView;
+    @FXML
+    private ScrollPane ScrollTodo;
+    @FXML
+    private AnchorPane AnchorTodo;
+    @FXML
+    private Label todoLabel; 
+
+    protected ToDoList toDoList= new ToDoList();
 
     private WebEngine engine;
     @FXML
-    public void initialize(){   
+    public void initialize(){ 
+        
+        ToDoBox.prefHeightProperty().bind(ScrollTodo.heightProperty());  
+        ToDoBox.prefWidthProperty().bind(ScrollTodo.widthProperty());
+        setupContextMenu();
         populateTagsTable();
+        populateToDoList();
         tagTextFieldFunc();
         displayWebView();
+        bindToDotextSize();
 
     }
+    public void bindToDotextSize(){
+        todoLabel.styleProperty().bind(Bindings.createStringBinding(() -> 
+        String.format("-fx-font-size: %.2fpx;", ToDoBox.getWidth() * 0.092), 
+        ToDoBox.widthProperty()));
+    }
+
     public void displayWebView(){
         engine = webView.getEngine();
         engine.load("https://www.google.com/");
@@ -46,7 +76,6 @@ public class Controller {
             -fx-background-radius: 15;
             -fx-border-radius: 15;
             -fx-padding: 8;
-            -fx-border-color: #d3d3d3;
         """);
         tagTextField.setOnKeyPressed(event->createTag(event));
     }
@@ -60,9 +89,6 @@ public class Controller {
             Text tagContent = new Text("\n  #:  "+ tag + "\n");
             tagTextDisplay.getChildren().add(tagContent);
 
-            ProgressIndicator indicator = new ProgressIndicator();
-            indicator.setMaxSize(20, 20);
-            tagTextDisplay.getChildren().add(indicator);
             Task<String> task = new Task<String>() {
                 @Override
                 protected String call() throws Exception{
@@ -74,18 +100,14 @@ public class Controller {
             task.setOnSucceeded(e->{
                 Platform.runLater(() ->{
                     String result = task.getValue();
-                    // Remove loading indicator
-                    tagTextDisplay.getChildren().remove(indicator);
                     // Add result text
-                    Text resultText = new Text(result + "\n");
+                    Text resultText = new Text(result);
                     tagTextDisplay.getChildren().add(resultText);
                 });
             });
             
             task.setOnFailed(e ->{
                 Platform.runLater(() -> {
-                    // Remove loading indicator
-                    tagTextDisplay.getChildren().remove(indicator);
                     // Show error message
                     Text errorText = new Text("Error processing tag");
                     errorText.setFill(Color.RED);
@@ -121,7 +143,6 @@ public class Controller {
             task.setOnSucceeded(e->{
                 Platform.runLater(() ->{
                     String result = task.getValue();
-                    // Remove loading indicator
                     // Add result text
                     Text resultText = new Text(result + "\n");
                     tagTextDisplay.getChildren().add(resultText);
@@ -130,7 +151,6 @@ public class Controller {
             
             task.setOnFailed(e ->{
                 Platform.runLater(() -> {
-                    // Remove loading indicator
                     // Show error message
                     Text errorText = new Text("Error processing tag");
                     errorText.setFill(Color.RED);
@@ -141,5 +161,96 @@ public class Controller {
             new Thread(task).start();
         }
     }
+    public void setupContextMenu(){
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem add = new MenuItem("add to-do");
+        add.setOnAction(event->showTextDialog());
+        contextMenu.getItems().addAll(add);
+        ToDoBox.setOnContextMenuRequested(event ->{
+            contextMenu.show(ToDoBox, event.getScreenX(), event.getScreenY());
+        });
+        
+    }
+    public void showTextDialog(){
+        TextInputDialog dialog = new TextInputDialog("enter to-do");
+        dialog.setTitle("Input Dialog");
+        dialog.setHeaderText("Enter your text below:");
+        dialog.setContentText("Input:");
+        Optional<String> result = dialog.showAndWait();
+        if(result.isPresent()) createToDo(result.get());
+        
+    }
+    public void createToDo(String todo){
+        DatabaseManage dbManage = Main.dbManager;
+        dbManage.insertToDo(todo);
+        dbManage.printToDosTable();
+        HBox todoItem = new HBox();
+        todoItem.setSpacing(10); // Add some spacing between elements
+        // Create the TextField
+        TextField toDoField = new TextField(todo);
+        
+        // Create a Delete Button
+        Button option = new Button("...");
+        option.setStyle("""
+            -fx-background-color: transparent;
+            -fx-border-color: transparent;
+        """);
+        option.setOnAction(e -> {setupToDoMenu(e, option, todoItem, toDoField);});
+    
+        // Add the TextField and Delete Button to the HBox
+        todoItem.getChildren().addAll(toDoField, option);
+    
+        // Add the HBox to the ToDoBox
+        ToDoBox.getChildren().add(todoItem);
+    }
+    public void setupToDoMenu(Event e, Button button, HBox todoItem, TextField todoField) {
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem remove = new MenuItem("Remove");
+        MenuItem cross = new MenuItem("Cross Out");
+        
+        remove.setOnAction(event -> {ToDoBox.getChildren().remove(todoItem);
+                                    toDoList.remove(todoItem);
+            });
+            
+        cross.setOnAction(event -> todoField.setStyle("-fx-text-decoration: line-through;"));
+    
+        contextMenu.getItems().addAll(cross, remove);
+        
 
+        contextMenu.show(button, 
+            button.localToScreen(button.getBoundsInLocal()).getMinX(),
+            button.localToScreen(button.getBoundsInLocal()).getMaxY());
+    }
+    public void populateToDoList(){
+        DatabaseManage dbManage = Main.dbManager;
+        if(dbManage.getToDosTableSize()==-1){
+            return;
+        }
+        int tableSize = dbManage.getToDosTableSize();
+        for(int i =0; i<tableSize; i++){
+            String todo = dbManage.getToDosByIndex(i+1);
+            createToDoWithoutAdding(todo);
+        }
+    }
+    private void createToDoWithoutAdding(String todo){
+        HBox todoItem = new HBox();
+        todoItem.setSpacing(10); // Add some spacing between elements
+        // Create the TextField
+        TextField toDoField = new TextField(todo);
+    
+        // Create a Delete Button
+        Button option = new Button("...");
+        option.setStyle("""
+            -fx-background-color: transparent;
+            -fx-border-color: transparent;
+        """);
+        option.setOnAction(e -> {setupToDoMenu(e, option, todoItem, toDoField); System.out.println("registered");});
+    
+        // Add the TextField and Delete Button to the HBox
+        todoItem.getChildren().addAll(toDoField, option);
+        toDoList.add(todoItem);
+        System.out.println(toDoList.getToDoList().size());
+        // Add the HBox to the ToDoBox
+        ToDoBox.getChildren().add(todoItem);
+    }
 }

@@ -31,37 +31,47 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.text.TextFlow?>
 <?import javafx.scene.web.WebView?>
+<?import javafx.geometry.Insets?>
 
+<?import javafx.scene.control.Label?>
 <VBox fx:id="Screen" prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.debrief.Controller">
   <children>
     <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
       <children>
-            <SplitPane dividerPositions="0.23746081504702193" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" >
+            <SplitPane dividerPositions="0.23746081504702193" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
               <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                <AnchorPane fx:id="AnchorTodo" minHeight="0.0" prefHeight="160.0"  minWidth="170.0" maxWidth="170.0">
                      <children>
-                        <ScrollPane hbarPolicy="NEVER" layoutY="7.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-                              <VBox fx:id="ToDoBox" prefHeight="368.0" prefWidth="150.0"/>
+                        <ScrollPane fx:id="ScrollTodo" hbarPolicy="NEVER" vbarPolicy="NEVER" layoutY="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" >
+                            <content>
+                               <VBox fx:id="ToDoBox" prefHeight="360.0" prefWidth="150.0"  style="-fx-background-color:#f2f2f2;" alignment="TOP_CENTER" >
+                                 <children>
+                                    <Label prefHeight="10"> </Label>
+                                      <Label fx:id="todoLabel" text="To-Do's" />
+                                 </children></VBox>
+                           </content>
+                             
                         </ScrollPane>
                      </children>
                   </AnchorPane>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                      <children>
-                        <TabPane prefHeight="373.0" prefWidth="483.0" tabClosingPolicy="UNAVAILABLE">
+                        <TabPane prefHeight="373.0" prefWidth="483.0" tabClosingPolicy="UNAVAILABLE" style="-fx-background-color: #f2f2f2;"  AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" >
                           <tabs>
-                            <Tab text="Tags">
+                            <Tab fx:id="TagsTab" text="Tags" style="-fx-background-color: #ecf2f9;">
                               <content>
-                                <AnchorPane fx:id="tagAnchor" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                <AnchorPane fx:id="tagAnchor" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" >
                                   <children>
                                     <TextField fx:id="tagTextField" layoutX="25.0" layoutY="33.0" prefHeight="26.0" prefWidth="434.0" promptText="Enter a Tag..."/>
                                     <TextFlow fx:id="tagTextDisplay" AnchorPane.topAnchor="70.0"  AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0" prefHeight="251.0" />
@@ -69,9 +79,9 @@
                                 </AnchorPane>
                               </content>
                             </Tab>
-                            <Tab text="WebView">
+                            <Tab fx:id= "WebView" text="WebView"  style="-fx-background-color: #ecf2f9;" >
                               <content>
-                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #f2f2f2;">
                                        <children>
                                           <WebView fx:id="webView" prefHeight="319.0" prefWidth="483.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"/>
                                    </children></AnchorPane>

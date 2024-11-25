@@ -1,0 +1,14 @@
+@font-face {
+    font-family: 'Montserrat';
+    src: url('file:src/main/resources/Montserrat-Italic-VariableFont_wght.ttf');
+}
+.montserrat-UnifFont {
+    -fx-font-family: 'Montserrat', sans-serif;
+    -fx-font-weight: 800;
+    -fx-font-style: normal;
+}
+
+* {
+    -fx-font-family: "Montserrat";
+    -fx-text-fill: #303841;
+}
