@@ -10,6 +10,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.text.Font;
 public class Main extends javafx.application.Application{
+    //TODO: implement font for emoji
     //TODO: implement database delete logic for tags
     public static DatabaseManage dbManager;
     
@@ -28,7 +29,8 @@ public class Main extends javafx.application.Application{
     }
     public static void main(String[] args) {
         try {
-            Font font = Font.loadFont(new FileInputStream("/Users/lichieler/deBrief_v2/v1/src/main/resources/Montserrat-VariableFont_wght.ttf"), 12);
+            Font font = Font.loadFont(new FileInputStream("src/main/resources/Montserrat/static/Montserrat-Regular.ttf"), 12);
+           
             if (font == null) {
                 System.out.println("Font failed to load!");
             } else {

@@ -1,10 +1,10 @@
 package com.debrief;
 
 import java.util.ArrayList;
-import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 
 public class TagsList {
-    ArrayList<TextField> list = null;
+    ArrayList<Text> list = null;
     public TagsList(){
         list = new ArrayList<>(10);
     }
@@ -12,14 +12,14 @@ public class TagsList {
      * Takes in TextField and adds to list
      * @param field
      */
-    public void add(TextField field){
+    public void add(Text field){
         list.add(field);
     }
     /** 
      * Removes based on index
      * @param index
      */
-    public void remove(TextField field){
+    public void remove(Text field){
         //first get index of the item
         int i = list.indexOf(field);
         //removes box

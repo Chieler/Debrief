@@ -243,11 +243,17 @@ public class DatabaseManage {
             }
     }
     public void deleteTagsColumn(int column){
-        String sql = "DELETE FROM tags WHERE index_number=?";
+        String deleteSql = "DELETE FROM tags WHERE index_number=?";
+        String updateSql = "UPDATE tags SET index_number = index_number-1 WHERE index_number > ?";
         try(Connection conn = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = conn.prepareStatement(sql)){
-                statement.setInt(1, column);
-                statement.executeUpdate(sql);
+            PreparedStatement deleteStatement = conn.prepareStatement(deleteSql);
+            PreparedStatement updateStatement = conn.prepareStatement(updateSql)){
+                deleteStatement.setInt(1, column);
+                deleteStatement.executeUpdate();
+
+                            // Update indices of rows with higher indices
+                updateStatement.setInt(1, column);
+                updateStatement.executeUpdate();
         }catch(SQLException e){
             e.printStackTrace();
         }
@@ -262,16 +268,26 @@ public class DatabaseManage {
             e.printStackTrace();
         }
     }
-    public void deleteToDosColumn(int column){
-        String sql = "DELETE FROM ToDos WHERE index_number=?";
-        try(Connection conn = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = conn.prepareStatement(sql)){
-                statement.setInt(1, column);
-                statement.executeUpdate();
-            }catch(SQLException e){
-                e.printStackTrace();
-            }
+    public void deleteToDosColumn(int column) {
+        String deleteSql = "DELETE FROM ToDos WHERE index_number = ?";
+        String updateSql = "UPDATE ToDos SET index_number = index_number - 1 WHERE index_number > ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement deleteStmt = conn.prepareStatement(deleteSql);
+             PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+             
+            // Delete the specified row
+            deleteStmt.setInt(1, column);
+            deleteStmt.executeUpdate();
+            
+            // Update indices of rows with higher indices
+            updateStmt.setInt(1, column);
+            updateStmt.executeUpdate();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
+    
     public int getTagsTableSize(){
         String sql = "SELECT COUNT(*) AS count FROM tags";
         try(Connection conn = DriverManager.getConnection(DB_URL);
