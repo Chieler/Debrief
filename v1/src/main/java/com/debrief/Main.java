@@ -40,7 +40,7 @@ public class Main extends javafx.application.Application{
             e.printStackTrace();
         }
         createDatabase();
-        dbManager.printToDosTable();
+        dbManager.printUrlTable();
         launch(args);
     }
 

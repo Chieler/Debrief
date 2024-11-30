@@ -1,6 +1,7 @@
 package com.debrief;
 
 
+import java.net.URI;
 import java.util.Optional;
 import com.debrief.Tags.Runner;
 import javafx.application.Platform;
@@ -48,11 +49,15 @@ public class Controller {
     @FXML
     private AnchorPane AnchorTodo;
     @FXML
+    private TextField viewTextField;
+    @FXML
     private Label todoLabel; 
     //initializes 
     protected ToDoList toDoList= new ToDoList();
     protected TagsList mainList = new TagsList();
     private WebEngine engine;
+
+
     @FXML
     public void initialize(){ 
         tagTextDisplay.getChildren().add(new Text("🌤️"));
@@ -62,6 +67,7 @@ public class Controller {
         populateTagsTable();
         populateToDoList();
         tagTextFieldFunc();
+        webTextFieldFunc();
         displayWebView();
         bindToDotextSize();
 
@@ -83,7 +89,14 @@ public class Controller {
     }
     public void displayWebView(){
         engine = webView.getEngine();
-        engine.load("https://www.google.com/");
+        String url = Main.dbManager.getURLByIndex(1);
+        try{
+            new URI(url).toURL();
+            engine.load(url);
+        }catch(Exception e){
+            engine.load("https://www.google.com/");
+        }
+       
     }
     public void tagTextFieldFunc(){
         tagTextField.setStyle("""
@@ -92,6 +105,18 @@ public class Controller {
             -fx-padding: 8;
         """);
         tagTextField.setOnKeyPressed(event->createTag(event));
+    }
+    public void webTextFieldFunc(){
+        viewTextField.setStyle("""
+            -fx-background-radius: 15;
+            -fx-border-radius: 15;
+            -fx-padding: 8;
+        """);
+        viewTextField.setOnKeyPressed(event->{Main.dbManager.clearUrlsTable();
+                                    Main.dbManager.insertURL(viewTextField.getText());
+                                    Main.dbManager.printUrlTable();
+                                    displayWebView();});
+        
     }
     private void createTag(KeyEvent event){
         if(event.getCode()==KeyCode.ENTER){
@@ -148,7 +173,9 @@ public class Controller {
             System.out.println(tag);
             Text tagContent = new Text("\n  #:  "+ tag + "\n");
             mainList.add(tagContent);
-            tagTextDisplay.getChildren().add(tagContent);
+            Text resultText = new Text();
+            tagTextDisplay.getChildren().addAll(tagContent, resultText);
+
             Task<String> task = new Task<String>() {
                 @Override
                 protected String call() throws Exception{
@@ -160,9 +187,8 @@ public class Controller {
             task.setOnSucceeded(e->{
                 Platform.runLater(() ->{
                     String result = task.getValue();
-                    // Add result text
-                    Text resultText = new Text(result + "\n");
-                    tagTextDisplay.getChildren().add(resultText);
+                    // set result text
+                    resultText.setText(result + "\n");
                     //////////////
                     setupTagsContextMenu(mainList, tagContent, resultText, tagTextDisplay);
                 });

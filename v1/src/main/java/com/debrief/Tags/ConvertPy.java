@@ -15,7 +15,7 @@ public class ConvertPy {
     public String runPyScript(){
         StringBuilder build = new StringBuilder();
         try{
-            processBuilder=new ProcessBuilder("/Users/lichieler/deBrief_v2/v1/venv/bin/python3.12", "src/main/java/com/debrief/Tags/gemini.py",jsonMap);
+            processBuilder=new ProcessBuilder("venv/bin/python3.12", "src/main/java/com/debrief/Tags/gemini.py",jsonMap);
             Process process = processBuilder.start();
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 

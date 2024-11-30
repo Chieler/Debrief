@@ -83,8 +83,10 @@
                               <content>
                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #f2f2f2;">
                                        <children>
-                                          <WebView fx:id="webView" prefHeight="319.0" prefWidth="483.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"/>
-                                   </children></AnchorPane>
+                                       <VBox fx:id="viewBox" VBox.vgrow="ALWAYS" prefHeight="319.0" prefWidth="483.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" >
+                                          <TextField fx:id="viewTextField" layoutX="25.0" layoutY="33.0" prefHeight="26.0" prefWidth="434.0" promptText="Enter a web link..."/>
+                                          <WebView fx:id="webView" VBox.vgrow="ALWAYS"/>
+                                   </VBox></children></AnchorPane>
                               </content>
                             </Tab>
                           </tabs>
