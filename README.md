@@ -16,3 +16,6 @@ Steps to install and set up the project:
 5. run the app
 (make run)
 
+#Demo video
+[Watch the demo video]([https://www.youtube.com/watch?v=example_video_id](https://youtu.be/0BXzlOOBKvY))
+
