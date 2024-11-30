@@ -1,7 +1,8 @@
 # Project Name
 Debrief
 ## Description
-An informatics desktop application built using javafx with in-memory storage capabilities
+An informatics desktop application built using javafx with in-memory storage capabilities.
+Retrives information for user using Selenium and parses info to string with the Gemini API
 
 ## Installation
 Steps to install and set up the project:
