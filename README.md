@@ -17,5 +17,4 @@ Steps to install and set up the project:
 (make run)
 
 #Demo video
-[Watch the demo video]([https://www.youtube.com/watch?v=example_video_id](https://youtu.be/0BXzlOOBKvY))
-
+[![Watch the video](https://img.youtube.com/vi/0BXzlOOBKvY/maxresdefault.jpg)](https://youtu.be/0BXzlOOBKvY)
